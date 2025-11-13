@@ -321,6 +321,31 @@
             overflow: hidden;
         }
         
+        /* 星空图表特殊样式 */
+        .network-section .chart-container {
+            height: 600px;
+            background: linear-gradient(135deg, #0a0e29 0%, #1a1f4b 50%, #0a0e29 100%);
+            box-shadow: 0 0 30px rgba(74, 107, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .network-section .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        
         .chart-container:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
@@ -371,11 +396,6 @@
             padding: 2px 5px;
             border-radius: 3px;
             font-style: italic;
-        }
-        
-        /* 网络图特殊样式 */
-        .network-section .chart-container {
-            height: 600px;
         }
         
         /* 地图特殊样式 */
@@ -1040,74 +1060,106 @@
             initPoetCharts();
         }
 
-        // 初始化网络图
+        // 初始化网络图 - 星空风格
         function initNetworkChart() {
             const chart = echarts.init(document.getElementById('network-chart'));
+            
+            // 生成随机闪烁动画
+            const generateTwinkleAnimation = () => {
+                const animations = [];
+                for (let i = 0; i < 23; i++) {
+                    animations.push({
+                        value: Math.random() * 0.5 + 0.5,
+                        time: Math.random() * 2000
+                    });
+                }
+                return animations;
+            };
+            
             const option = {
+                backgroundColor: 'transparent',
                 title: {
-                    text: '唐诗宋词意象共现网络',
+                    text: '唐诗宋词意象星空',
                     subtext: '节点大小表示意象出现频率，连线粗细表示共现强度',
                     left: 'center',
                     textStyle: {
+                        color: '#fff',
                         fontSize: 16
+                    },
+                    subtextStyle: {
+                        color: 'rgba(255,255,255,0.7)'
                     }
                 },
-                tooltip: {},
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
                 legend: {
                     data: ['天文', '地理', '植物', '动物', '其他'],
                     orient: 'vertical',
                     right: 10,
-                    top: 'center'
+                    top: 'center',
+                    textStyle: {
+                        color: '#fff'
+                    }
                 },
                 series: [{
                     type: 'graph',
                     layout: 'force',
+                    force: {
+                        repulsion: 200,
+                        gravity: 0.1,
+                        edgeLength: 100
+                    },
                     data: [
-                        {name: '月', value: 100, category: 0, symbolSize: 40},
-                        {name: '风', value: 80, category: 0, symbolSize: 35},
-                        {name: '云', value: 70, category: 0, symbolSize: 30},
-                        {name: '星', value: 50, category: 0, symbolSize: 25},
-                        {name: '雨', value: 60, category: 0, symbolSize: 28},
-                        {name: '山', value: 85, category: 1, symbolSize: 36},
-                        {name: '水', value: 75, category: 1, symbolSize: 33},
-                        {name: '江', value: 65, category: 1, symbolSize: 29},
-                        {name: '河', value: 55, category: 1, symbolSize: 26},
-                        {name: '海', value: 45, category: 1, symbolSize: 23},
-                        {name: '柳', value: 70, category: 2, symbolSize: 30},
-                        {name: '松', value: 50, category: 2, symbolSize: 25},
-                        {name: '梅', value: 60, category: 2, symbolSize: 28},
-                        {name: '竹', value: 45, category: 2, symbolSize: 23},
-                        {name: '菊', value: 40, category: 2, symbolSize: 22},
-                        {name: '雁', value: 55, category: 3, symbolSize: 26},
-                        {name: '马', value: 50, category: 3, symbolSize: 25},
-                        {name: '燕', value: 45, category: 3, symbolSize: 23},
-                        {name: '蝉', value: 35, category: 3, symbolSize: 20},
-                        {name: '酒', value: 75, category: 4, symbolSize: 33},
-                        {name: '剑', value: 40, category: 4, symbolSize: 22},
-                        {name: '舟', value: 45, category: 4, symbolSize: 23},
-                        {name: '楼', value: 50, category: 4, symbolSize: 25}
+                        {name: '月', value: 100, category: 0, symbolSize: 25, itemStyle: {color: '#FFD700'}},
+                        {name: '风', value: 80, category: 0, symbolSize: 22, itemStyle: {color: '#87CEEB'}},
+                        {name: '云', value: 70, category: 0, symbolSize: 20, itemStyle: {color: '#F0F8FF'}},
+                        {name: '星', value: 50, category: 0, symbolSize: 18, itemStyle: {color: '#F8F8FF'}},
+                        {name: '雨', value: 60, category: 0, symbolSize: 19, itemStyle: {color: '#B0C4DE'}},
+                        {name: '山', value: 85, category: 1, symbolSize: 23, itemStyle: {color: '#8B4513'}},
+                        {name: '水', value: 75, category: 1, symbolSize: 21, itemStyle: {color: '#1E90FF'}},
+                        {name: '江', value: 65, category: 1, symbolSize: 20, itemStyle: {color: '#4169E1'}},
+                        {name: '河', value: 55, category: 1, symbolSize: 18, itemStyle: {color: '#4682B4'}},
+                        {name: '海', value: 45, category: 1, symbolSize: 17, itemStyle: {color: '#000080'}},
+                        {name: '柳', value: 70, category: 2, symbolSize: 20, itemStyle: {color: '#32CD32'}},
+                        {name: '松', value: 50, category: 2, symbolSize: 18, itemStyle: {color: '#228B22'}},
+                        {name: '梅', value: 60, category: 2, symbolSize: 19, itemStyle: {color: '#FF69B4'}},
+                        {name: '竹', value: 45, category: 2, symbolSize: 17, itemStyle: {color: '#006400'}},
+                        {name: '菊', value: 40, category: 2, symbolSize: 16, itemStyle: {color: '#FFD700'}},
+                        {name: '雁', value: 55, category: 3, symbolSize: 18, itemStyle: {color: '#D2691E'}},
+                        {name: '马', value: 50, category: 3, symbolSize: 18, itemStyle: {color: '#8B4513'}},
+                        {name: '燕', value: 45, category: 3, symbolSize: 17, itemStyle: {color: '#2F4F4F'}},
+                        {name: '蝉', value: 35, category: 3, symbolSize: 15, itemStyle: {color: '#DAA520'}},
+                        {name: '酒', value: 75, category: 4, symbolSize: 21, itemStyle: {color: '#8B0000'}},
+                        {name: '剑', value: 40, category: 4, symbolSize: 16, itemStyle: {color: '#C0C0C0'}},
+                        {name: '舟', value: 45, category: 4, symbolSize: 17, itemStyle: {color: '#DEB887'}},
+                        {name: '楼', value: 50, category: 4, symbolSize: 18, itemStyle: {color: '#A0522D'}}
                     ],
                     links: [
-                        {source: '月', target: '酒', value: 8},
-                        {source: '月', target: '风', value: 7},
-                        {source: '月', target: '水', value: 6},
-                        {source: '柳', target: '离别', value: 9},
-                        {source: '柳', target: '春', value: 7},
-                        {source: '雁', target: '秋', value: 8},
-                        {source: '雁', target: '书', value: 6},
-                        {source: '山', target: '水', value: 9},
-                        {source: '山', target: '云', value: 7},
-                        {source: '酒', target: '剑', value: 6},
-                        {source: '酒', target: '诗', value: 7},
-                        {source: '风', target: '雨', value: 6},
-                        {source: '江', target: '月', value: 5},
-                        {source: '江', target: '舟', value: 6},
-                        {source: '梅', target: '雪', value: 7},
-                        {source: '松', target: '山', value: 6},
-                        {source: '竹', target: '风', value: 5},
-                        {source: '菊', target: '秋', value: 6},
-                        {source: '马', target: '剑', value: 5},
-                        {source: '燕', target: '春', value: 6}
+                        {source: '月', target: '酒', value: 8, lineStyle: {color: 'rgba(255,215,0,0.6)', width: 3}},
+                        {source: '月', target: '风', value: 7, lineStyle: {color: 'rgba(135,206,235,0.6)', width: 2.5}},
+                        {source: '月', target: '水', value: 6, lineStyle: {color: 'rgba(30,144,255,0.6)', width: 2}},
+                        {source: '柳', target: '离别', value: 9, lineStyle: {color: 'rgba(50,205,50,0.6)', width: 3.5}},
+                        {source: '柳', target: '春', value: 7, lineStyle: {color: 'rgba(50,205,50,0.6)', width: 2.5}},
+                        {source: '雁', target: '秋', value: 8, lineStyle: {color: 'rgba(210,105,30,0.6)', width: 3}},
+                        {source: '雁', target: '书', value: 6, lineStyle: {color: 'rgba(210,105,30,0.6)', width: 2}},
+                        {source: '山', target: '水', value: 9, lineStyle: {color: 'rgba(139,69,19,0.6)', width: 3.5}},
+                        {source: '山', target: '云', value: 7, lineStyle: {color: 'rgba(139,69,19,0.6)', width: 2.5}},
+                        {source: '酒', target: '剑', value: 6, lineStyle: {color: 'rgba(139,0,0,0.6)', width: 2}},
+                        {source: '酒', target: '诗', value: 7, lineStyle: {color: 'rgba(139,0,0,0.6)', width: 2.5}},
+                        {source: '风', target: '雨', value: 6, lineStyle: {color: 'rgba(135,206,235,0.6)', width: 2}},
+                        {source: '江', target: '月', value: 5, lineStyle: {color: 'rgba(65,105,225,0.6)', width: 1.5}},
+                        {source: '江', target: '舟', value: 6, lineStyle: {color: 'rgba(65,105,225,0.6)', width: 2}},
+                        {source: '梅', target: '雪', value: 7, lineStyle: {color: 'rgba(255,105,180,0.6)', width: 2.5}},
+                        {source: '松', target: '山', value: 6, lineStyle: {color: 'rgba(34,139,34,0.6)', width: 2}},
+                        {source: '竹', target: '风', value: 5, lineStyle: {color: 'rgba(0,100,0,0.6)', width: 1.5}},
+                        {source: '菊', target: '秋', value: 6, lineStyle: {color: 'rgba(255,215,0,0.6)', width: 2}},
+                        {source: '马', target: '剑', value: 5, lineStyle: {color: 'rgba(139,69,19,0.6)', width: 1.5}},
+                        {source: '燕', target: '春', value: 6, lineStyle: {color: 'rgba(47,79,79,0.6)', width: 2}}
                     ],
                     categories: [
                         {name: '天文'},
@@ -1122,20 +1174,51 @@
                         show: true,
                         position: 'right',
                         formatter: '{b}',
-                        fontSize: 14
+                        fontSize: 14,
+                        color: '#fff',
+                        textShadowColor: 'rgba(0,0,0,0.8)',
+                        textShadowBlur: 5
                     },
                     lineStyle: {
                         color: 'source',
-                        curveness: 0.3
+                        curveness: 0.2,
+                        opacity: 0.6
                     },
                     emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        },
                         lineStyle: {
                             width: 5
+                        },
+                        itemStyle: {
+                            shadowBlur: 20,
+                            shadowColor: 'rgba(255,255,255,0.8)'
                         }
+                    },
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 0,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(255,255,255,0.5)'
                     }
                 }]
             };
+            
             chart.setOption(option);
+            
+            // 添加星星闪烁效果
+            setInterval(() => {
+                const data = option.series[0].data;
+                data.forEach(item => {
+                    // 随机改变星星的亮度
+                    const randomBrightness = Math.random() * 0.5 + 0.5;
+                    item.itemStyle.opacity = randomBrightness;
+                });
+                chart.setOption(option);
+            }, 1000);
             
             // 响应窗口大小变化
             window.addEventListener('resize', function() {
