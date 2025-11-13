@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诗情画意：中国古典诗词中的自然意象与时空情感</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 封面 -->
+    <section class="cover">
+        <h1>诗情画意</h1>
+        <div class="subtitle">中国古典诗词中的自然意象与时空情感</div>
+        <p>数据可视化探索诗词中的意象宇宙与情感流变</p>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- 第一章：意象共现网络 -->
+    <section class="section network-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>意象的星空</h2>
+            </div>
+            <div class="section-content">
+                <div class="chart-container" id="network-chart"></div>
+                <div class="text-content">
+                    <h3>意象的关联宇宙</h3>
+                    <p>在中国古典诗词中，自然意象并非孤立存在，而是相互关联、相互呼应的符号系统。通过分析唐诗宋词中意象的共现关系，我们可以构建出一个意象的"宇宙网络"。</p>
+                    <p>图中每个节点代表一个自然意象，连线表示它们经常在同一首诗中出现。连线越粗，表示共现频率越高。可以看到，"月"与"酒"、"柳"与"离别"、"山"与"水"等意象组合形成了稳定的关联。</p>
+                    <p>这种意象网络不仅反映了诗人的创作习惯，也体现了中国传统文化中"天人合一"的哲学思想，自然景物与人类情感紧密相连。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第二章：诗人情感地图 -->
+    <section class="section map-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>诗人的地图</h2>
+            </div>
+            <div class="section-content">
+                <div class="text-content">
+                    <h3>地域与诗情</h3>
+                    <p>中国幅员辽阔，不同地域的自然景观与人文环境深刻影响了诗人的创作风格与情感表达。通过分析各地诗人的情感倾向，我们可以绘制出一幅诗情地图。</p>
+                    <p>地图中，颜色深浅表示该地区诗人的平均情感分值。深蓝色区域代表情感较为忧郁、感伤，而暖色区域则代表情感较为积极、豪迈。</p>
+                    <p>我们可以看到，边塞地区（如甘肃、新疆）的诗歌情感多豪迈悲壮，而江南地区（如江苏、浙江）的诗歌则多婉约细腻。这种地域差异反映了自然环境对文学创作的深刻影响。</p>
+                </div>
+                <div class="chart-container" id="map-chart"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第三章：意象历史流变 -->
+    <section class="section timeline-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>意象的兴衰</h2>
+            </div>
+            <div class="controls">
+                <button class="active" data-type="moon">明月</button>
+                <button data-type="willow">杨柳</button>
+                <button data-type="goose">鸿雁</button>
+                <button data-type="horse">骏马</button>
+                <button data-type="wine">美酒</button>
+            </div>
+            <div class="section-content">
+                <div class="chart-container" id="timeline-chart"></div>
+                <div class="text-content">
+                    <h3>意象的时代变迁</h3>
+                    <p>不同历史时期，诗人对自然意象的偏好有所不同。这种变化反映了社会变迁、文化风尚以及审美趣味的演变。</p>
+                    <p>图表展示了几个典型自然意象在不同朝代的使用频率变化。我们可以看到，"明月"意象在唐代达到顶峰，这与唐代诗歌的繁荣以及"望月怀远"的文化传统密切相关。</p>
+                    <p>而"骏马"意象在宋代以后逐渐减少，可能与宋代重文轻武的社会风气有关。"杨柳"意象则在各个朝代都保持较高频率，体现了其作为离别象征的稳定性。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第四章：诗人个体分析 -->
+    <section class="section poet-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>诗人的内心世界</h2>
+            </div>
+            <div class="controls">
+                <select id="poet-select">
+                    <option value="libai">李白</option>
+                    <option value="dufu">杜甫</option>
+                    <option value="sushi">苏轼</option>
+                    <option value="liquingzhao">李清照</option>
+                    <option value="wangwei">王维</option>
+                </select>
+            </div>
+            <div class="poet-charts">
+                <div class="chart-container" id="radar-chart"></div>
+                <div class="chart-container" id="wordcloud-chart"></div>
+            </div>
+            <div class="text-content" style="width: 100%; margin-top: 30px;">
+                <h3 id="poet-name">李白的意象世界</h3>
+                <p id="poet-description">李白作为盛唐浪漫主义诗人的代表，其诗歌中充满了豪放不羁的意象。他偏爱"明月"、"美酒"、"长剑"等意象，体现了其豪迈洒脱的性格特点。同时，"白发"、"秋霜"等意象也反映了他对时光流逝的感慨。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <p>数据来源：GitHub《chinese-poetry》项目、全唐诗、全宋词等</p>
+            <p>可视化设计：数据可视化海报大赛参赛作品</p>
+            <p>© 2025 诗情画意 - 中国古典诗词数据可视化探索</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

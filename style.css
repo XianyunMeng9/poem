@@ -1,0 +1,240 @@
+:root {
+    --primary-color: #8c2318;
+    --secondary-color: #a87c4f;
+    --accent-color: #3a6351;
+    --light-color: #f5e8c8;
+    --dark-color: #2c2c2c;
+    --text-color: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "SimSun", "STSong", "宋体", serif;
+    color: var(--text-color);
+    background-color: #f9f5eb;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 封面部分 */
+.cover {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f5e8c8"/><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30" fill="none" stroke="%23a87c4f" stroke-width="1"/></svg>');
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.cover h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-weight: normal;
+}
+
+.cover .subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    font-style: italic;
+}
+
+.cover .scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) translateX(-50%);
+    }
+    40% {
+        transform: translateY(-10px) translateX(-50%);
+    }
+    60% {
+        transform: translateY(-5px) translateX(-50%);
+    }
+}
+
+/* 章节样式 */
+.section {
+    padding: 80px 0;
+    border-bottom: 1px solid #e0d6c2;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    display: inline-block;
+    padding: 0 20px;
+    background-color: #f9f5eb;
+    position: relative;
+    z-index: 1;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--secondary-color);
+    z-index: 0;
+}
+
+.section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+}
+
+.chart-container {
+    flex: 1;
+    min-width: 300px;
+    height: 500px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.text-content {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+}
+
+.text-content h3 {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.text-content p {
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+/* 网络图特殊样式 */
+.network-section .chart-container {
+    height: 600px;
+}
+
+/* 地图特殊样式 */
+.map-section .chart-container {
+    height: 600px;
+}
+
+/* 时间线特殊样式 */
+.timeline-section .controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.timeline-section .controls button {
+    background-color: var(--light-color);
+    border: 1px solid var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.timeline-section .controls button.active {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* 诗人分析特殊样式 */
+.poet-section .controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.poet-section select {
+    padding: 10px 15px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    background-color: white;
+    font-size: 1rem;
+    min-width: 200px;
+}
+
+.poet-charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.poet-charts .chart-container {
+    flex: 1;
+    min-width: 300px;
+    height: 400px;
+}
+
+/* 页脚 */
+footer {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+}
+
+footer p {
+    margin-bottom: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .cover h1 {
+        font-size: 2.5rem;
+    }
+    
+    .cover .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .section {
+        padding: 50px 0;
+    }
+    
+    .section-title h2 {
+        font-size: 2rem;
+    }
+    
+    .chart-container, .text-content {
+        min-width: 100%;
+    }
+}
