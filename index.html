@@ -4,19 +4,742 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>诗情画意：中国古典诗词中的自然意象与时空情感</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8c2318;
+            --secondary-color: #a87c4f;
+            --accent-color: #3a6351;
+            --light-color: #f5e8c8;
+            --dark-color: #2c2c2c;
+            --text-color: #333;
+            --shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "SimSun", "STSong", "宋体", serif;
+            color: var(--text-color);
+            background-color: #f9f5eb;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 加载动画 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5e8c8 0%, #d9c7a5 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(140, 35, 24, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(249, 245, 235, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        /* 封面部分 */
+        .cover {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f5e8c8"/><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30" fill="none" stroke="%23a87c4f" stroke-width="1"/></svg>');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path d="M40,40 Q100,10 160,40 T190,100 T160,160 T100,190 T40,160 T10,100 T40,40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
+            background-size: 200px 200px;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100px, -100px); }
+        }
+        
+        .cover-content {
+            max-width: 800px;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .cover h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: normal;
+            letter-spacing: 5px;
+        }
+        
+        .cover .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .cover p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        
+        .cover-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .cover-btn:hover {
+            background-color: #6a1a12;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+        
+        /* 章节样式 */
+        .section {
+            padding: 100px 0;
+            border-bottom: 1px solid #e0d6c2;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            display: inline-block;
+            padding: 0 20px;
+            background-color: #f9f5eb;
+            position: relative;
+            z-index: 1;
+            font-weight: normal;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--secondary-color);
+            z-index: 0;
+        }
+        
+        .section-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .text-content {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .text-content h3 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .text-content h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+        
+        .text-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            background-color: rgba(168, 124, 79, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-style: italic;
+        }
+        
+        /* 网络图特殊样式 */
+        .network-section .chart-container {
+            height: 600px;
+        }
+        
+        /* 地图特殊样式 */
+        .map-section .chart-container {
+            height: 600px;
+        }
+        
+        /* 时间线特殊样式 */
+        .timeline-section .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .timeline-section .controls button {
+            background-color: var(--light-color);
+            border: 1px solid var(--secondary-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .timeline-section .controls button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .timeline-section .controls button.active {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 诗人分析特殊样式 */
+        .poet-section .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .poet-section select {
+            padding: 12px 20px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            background-color: white;
+            font-size: 1rem;
+            min-width: 250px;
+            font-family: inherit;
+            box-shadow: var(--shadow);
+        }
+        
+        .poet-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .poet-charts .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 450px;
+        }
+        
+        /* 诗词展示区 */
+        .poem-showcase {
+            margin-top: 40px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .poem-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .poem-author {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        .poem-content {
+            font-size: 1.2rem;
+            line-height: 2;
+            text-align: center;
+            white-space: pre-line;
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--light-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--light-color);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: #6a1a12;
+            transform: translateY(-3px);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .cover h1 {
+                font-size: 3rem;
+            }
+            
+            .cover .subtitle {
+                font-size: 1.5rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: rgba(249, 245, 235, 0.98);
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: var(--transition);
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .cover h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cover .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 70px 0;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .chart-container, .text-content {
+                min-width: 100%;
+            }
+            
+            .footer-section {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cover h1 {
+                font-size: 2rem;
+            }
+            
+            .cover .subtitle {
+                font-size: 1rem;
+            }
+            
+            .cover p {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+            
+            .network-section .chart-container,
+            .map-section .chart-container {
+                height: 500px;
+            }
+            
+            .poet-charts .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- 加载动画 -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <i class="fas fa-mountain"></i>
+        </div>
+        <h2>诗情画意</h2>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">诗情画意</div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#cover">首页</a></li>
+                <li><a href="#network-section">意象星空</a></li>
+                <li><a href="#map-section">诗人地图</a></li>
+                <li><a href="#timeline-section">意象兴衰</a></li>
+                <li><a href="#poet-section">诗人世界</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <!-- 封面 -->
-    <section class="cover">
-        <h1>诗情画意</h1>
-        <div class="subtitle">中国古典诗词中的自然意象与时空情感</div>
-        <p>数据可视化探索诗词中的意象宇宙与情感流变</p>
-        <div class="scroll-indicator">↓</div>
+    <section class="cover" id="cover">
+        <div class="cover-content">
+            <h1>诗情画意</h1>
+            <div class="subtitle">中国古典诗词中的自然意象与时空情感</div>
+            <p>数据可视化探索诗词中的意象宇宙与情感流变，感受千年诗韵与自然意象的完美融合</p>
+            <a href="#network-section" class="cover-btn">开始探索</a>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
     </section>
 
     <!-- 第一章：意象共现网络 -->
-    <section class="section network-section">
+    <section class="section network-section" id="network-section">
         <div class="container">
             <div class="section-title">
                 <h2>意象的星空</h2>
@@ -25,16 +748,22 @@
                 <div class="chart-container" id="network-chart"></div>
                 <div class="text-content">
                     <h3>意象的关联宇宙</h3>
-                    <p>在中国古典诗词中，自然意象并非孤立存在，而是相互关联、相互呼应的符号系统。通过分析唐诗宋词中意象的共现关系，我们可以构建出一个意象的"宇宙网络"。</p>
-                    <p>图中每个节点代表一个自然意象，连线表示它们经常在同一首诗中出现。连线越粗，表示共现频率越高。可以看到，"月"与"酒"、"柳"与"离别"、"山"与"水"等意象组合形成了稳定的关联。</p>
-                    <p>这种意象网络不仅反映了诗人的创作习惯，也体现了中国传统文化中"天人合一"的哲学思想，自然景物与人类情感紧密相连。</p>
+                    <p>在中国古典诗词中，自然意象并非孤立存在，而是相互关联、相互呼应的符号系统。通过分析唐诗宋词中意象的共现关系，我们可以构建出一个意象的<span class="highlight">"宇宙网络"</span>。</p>
+                    <p>图中每个节点代表一个自然意象，连线表示它们经常在同一首诗中出现。连线越粗，表示共现频率越高。可以看到，<span class="highlight">"月"与"酒"、"柳"与"离别"、"山"与"水"</span>等意象组合形成了稳定的关联。</p>
+                    <p>这种意象网络不仅反映了诗人的创作习惯，也体现了中国传统文化中<span class="highlight">"天人合一"</span>的哲学思想，自然景物与人类情感紧密相连。</p>
+                    <div class="poem-showcase">
+                        <div class="poem-title">静夜思</div>
+                        <div class="poem-author">【唐】李白</div>
+                        <div class="poem-content">床前明月光，疑是地上霜。
+举头望明月，低头思故乡。</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- 第二章：诗人情感地图 -->
-    <section class="section map-section">
+    <section class="section map-section" id="map-section">
         <div class="container">
             <div class="section-title">
                 <h2>诗人的地图</h2>
@@ -42,9 +771,17 @@
             <div class="section-content">
                 <div class="text-content">
                     <h3>地域与诗情</h3>
-                    <p>中国幅员辽阔，不同地域的自然景观与人文环境深刻影响了诗人的创作风格与情感表达。通过分析各地诗人的情感倾向，我们可以绘制出一幅诗情地图。</p>
+                    <p>中国幅员辽阔，不同地域的自然景观与人文环境深刻影响了诗人的创作风格与情感表达。通过分析各地诗人的情感倾向，我们可以绘制出一幅<span class="highlight">诗情地图</span>。</p>
                     <p>地图中，颜色深浅表示该地区诗人的平均情感分值。深蓝色区域代表情感较为忧郁、感伤，而暖色区域则代表情感较为积极、豪迈。</p>
-                    <p>我们可以看到，边塞地区（如甘肃、新疆）的诗歌情感多豪迈悲壮，而江南地区（如江苏、浙江）的诗歌则多婉约细腻。这种地域差异反映了自然环境对文学创作的深刻影响。</p>
+                    <p>我们可以看到，<span class="highlight">边塞地区</span>（如甘肃、新疆）的诗歌情感多豪迈悲壮，而<span class="highlight">江南地区</span>（如江苏、浙江）的诗歌则多婉约细腻。这种地域差异反映了自然环境对文学创作的深刻影响。</p>
+                    <div class="poem-showcase">
+                        <div class="poem-title">使至塞上</div>
+                        <div class="poem-author">【唐】王维</div>
+                        <div class="poem-content">单车欲问边，属国过居延。
+征蓬出汉塞，归雁入胡天。
+大漠孤烟直，长河落日圆。
+萧关逢候骑，都护在燕然。</div>
+                    </div>
                 </div>
                 <div class="chart-container" id="map-chart"></div>
             </div>
@@ -52,7 +789,7 @@
     </section>
 
     <!-- 第三章：意象历史流变 -->
-    <section class="section timeline-section">
+    <section class="section timeline-section" id="timeline-section">
         <div class="container">
             <div class="section-title">
                 <h2>意象的兴衰</h2>
@@ -69,15 +806,22 @@
                 <div class="text-content">
                     <h3>意象的时代变迁</h3>
                     <p>不同历史时期，诗人对自然意象的偏好有所不同。这种变化反映了社会变迁、文化风尚以及审美趣味的演变。</p>
-                    <p>图表展示了几个典型自然意象在不同朝代的使用频率变化。我们可以看到，"明月"意象在唐代达到顶峰，这与唐代诗歌的繁荣以及"望月怀远"的文化传统密切相关。</p>
-                    <p>而"骏马"意象在宋代以后逐渐减少，可能与宋代重文轻武的社会风气有关。"杨柳"意象则在各个朝代都保持较高频率，体现了其作为离别象征的稳定性。</p>
+                    <p id="timeline-description">图表展示了几个典型自然意象在不同朝代的使用频率变化。我们可以看到，<span class="highlight">"明月"</span>意象在唐代达到顶峰，这与唐代诗歌的繁荣以及<span class="highlight">"望月怀远"</span>的文化传统密切相关。</p>
+                    <div class="poem-showcase" id="timeline-poem">
+                        <div class="poem-title">水调歌头·明月几时有</div>
+                        <div class="poem-author">【宋】苏轼</div>
+                        <div class="poem-content">明月几时有？把酒问青天。
+不知天上宫阙，今夕是何年。
+我欲乘风归去，又恐琼楼玉宇，高处不胜寒。
+起舞弄清影，何似在人间。</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- 第四章：诗人个体分析 -->
-    <section class="section poet-section">
+    <section class="section poet-section" id="poet-section">
         <div class="container">
             <div class="section-title">
                 <h2>诗人的内心世界</h2>
@@ -98,6 +842,14 @@
             <div class="text-content" style="width: 100%; margin-top: 30px;">
                 <h3 id="poet-name">李白的意象世界</h3>
                 <p id="poet-description">李白作为盛唐浪漫主义诗人的代表，其诗歌中充满了豪放不羁的意象。他偏爱"明月"、"美酒"、"长剑"等意象，体现了其豪迈洒脱的性格特点。同时，"白发"、"秋霜"等意象也反映了他对时光流逝的感慨。</p>
+                <div class="poem-showcase">
+                    <div class="poem-title">将进酒</div>
+                    <div class="poem-author">【唐】李白</div>
+                    <div class="poem-content">君不见黄河之水天上来，奔流到海不复回。
+君不见高堂明镜悲白发，朝如青丝暮成雪。
+人生得意须尽欢，莫使金樽空对月。
+天生我材必有用，千金散尽还复来。</div>
+                </div>
             </div>
         </div>
     </section>
@@ -105,13 +857,751 @@
     <!-- 页脚 -->
     <footer>
         <div class="container">
-            <p>数据来源：GitHub《chinese-poetry》项目、全唐诗、全宋词等</p>
-            <p>可视化设计：数据可视化海报大赛参赛作品</p>
-            <p>© 2025 诗情画意 - 中国古典诗词数据可视化探索</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>关于项目</h3>
+                    <p>本项目通过数据可视化技术，探索中国古典诗词中自然意象与时空情感的关联，展现中华诗词文化的博大精深。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#cover">首页</a></li>
+                        <li><a href="#network-section">意象星空</a></li>
+                        <li><a href="#map-section">诗人地图</a></li>
+                        <li><a href="#timeline-section">意象兴衰</a></li>
+                        <li><a href="#poet-section">诗人世界</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>数据来源</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">GitHub《chinese-poetry》项目</a></li>
+                        <li><a href="#">全唐诗数据库</a></li>
+                        <li><a href="#">全宋词数据库</a></li>
+                        <li><a href="#">古诗文网</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 诗情画意 - 中国古典诗词数据可视化探索 | 设计：数据可视化海报大赛参赛作品</p>
+            </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-    <script src="script.js"></script>
+    <!-- 回到顶部按钮 -->
+    <a href="#" class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <script>
+        // 加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }
+                loadingProgress.style.width = `${progress}%`;
+            }, 200);
+            
+            // 初始化所有功能
+            initNavbar();
+            initScrollEffects();
+            initCharts();
+            setupEventListeners();
+        });
+
+        // 导航栏功能
+        function initNavbar() {
+            const navbar = document.getElementById('navbar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            let lastScrollY = window.scrollY;
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                    navbar.classList.add('hidden');
+                } else {
+                    navbar.classList.remove('hidden');
+                }
+                
+                lastScrollY = window.scrollY;
+            });
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+            
+            // 点击导航链接后关闭移动菜单
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
+
+        // 滚动效果
+        function initScrollEffects() {
+            const sections = document.querySelectorAll('.section');
+            const backToTop = document.getElementById('backToTop');
+            
+            // 节流函数
+            function throttle(func, limit) {
+                let inThrottle;
+                return function() {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
+                }
+            }
+            
+            // 检查元素是否在视口中
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+            
+            // 显示/隐藏回到顶部按钮
+            function toggleBackToTop() {
+                if (window.scrollY > 500) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            }
+            
+            // 显示进入视口的章节
+            function showSections() {
+                sections.forEach(section => {
+                    if (isInViewport(section)) {
+                        section.classList.add('visible');
+                    }
+                });
+            }
+            
+            // 初始显示可见的章节
+            showSections();
+            
+            // 监听滚动事件
+            window.addEventListener('scroll', throttle(() => {
+                toggleBackToTop();
+                showSections();
+            }, 100));
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // 初始化图表
+        function initCharts() {
+            initNetworkChart();
+            initMapChart();
+            initTimelineChart();
+            initPoetCharts();
+        }
+
+        // 初始化网络图
+        function initNetworkChart() {
+            const chart = echarts.init(document.getElementById('network-chart'));
+            const option = {
+                title: {
+                    text: '唐诗宋词意象共现网络',
+                    subtext: '节点大小表示意象出现频率，连线粗细表示共现强度',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {},
+                legend: {
+                    data: ['天文', '地理', '植物', '动物', '其他'],
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center'
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: [
+                        {name: '月', value: 100, category: 0, symbolSize: 40},
+                        {name: '风', value: 80, category: 0, symbolSize: 35},
+                        {name: '云', value: 70, category: 0, symbolSize: 30},
+                        {name: '星', value: 50, category: 0, symbolSize: 25},
+                        {name: '雨', value: 60, category: 0, symbolSize: 28},
+                        {name: '山', value: 85, category: 1, symbolSize: 36},
+                        {name: '水', value: 75, category: 1, symbolSize: 33},
+                        {name: '江', value: 65, category: 1, symbolSize: 29},
+                        {name: '河', value: 55, category: 1, symbolSize: 26},
+                        {name: '海', value: 45, category: 1, symbolSize: 23},
+                        {name: '柳', value: 70, category: 2, symbolSize: 30},
+                        {name: '松', value: 50, category: 2, symbolSize: 25},
+                        {name: '梅', value: 60, category: 2, symbolSize: 28},
+                        {name: '竹', value: 45, category: 2, symbolSize: 23},
+                        {name: '菊', value: 40, category: 2, symbolSize: 22},
+                        {name: '雁', value: 55, category: 3, symbolSize: 26},
+                        {name: '马', value: 50, category: 3, symbolSize: 25},
+                        {name: '燕', value: 45, category: 3, symbolSize: 23},
+                        {name: '蝉', value: 35, category: 3, symbolSize: 20},
+                        {name: '酒', value: 75, category: 4, symbolSize: 33},
+                        {name: '剑', value: 40, category: 4, symbolSize: 22},
+                        {name: '舟', value: 45, category: 4, symbolSize: 23},
+                        {name: '楼', value: 50, category: 4, symbolSize: 25}
+                    ],
+                    links: [
+                        {source: '月', target: '酒', value: 8},
+                        {source: '月', target: '风', value: 7},
+                        {source: '月', target: '水', value: 6},
+                        {source: '柳', target: '离别', value: 9},
+                        {source: '柳', target: '春', value: 7},
+                        {source: '雁', target: '秋', value: 8},
+                        {source: '雁', target: '书', value: 6},
+                        {source: '山', target: '水', value: 9},
+                        {source: '山', target: '云', value: 7},
+                        {source: '酒', target: '剑', value: 6},
+                        {source: '酒', target: '诗', value: 7},
+                        {source: '风', target: '雨', value: 6},
+                        {source: '江', target: '月', value: 5},
+                        {source: '江', target: '舟', value: 6},
+                        {source: '梅', target: '雪', value: 7},
+                        {source: '松', target: '山', value: 6},
+                        {source: '竹', target: '风', value: 5},
+                        {source: '菊', target: '秋', value: 6},
+                        {source: '马', target: '剑', value: 5},
+                        {source: '燕', target: '春', value: 6}
+                    ],
+                    categories: [
+                        {name: '天文'},
+                        {name: '地理'},
+                        {name: '植物'},
+                        {name: '动物'},
+                        {name: '其他'}
+                    ],
+                    roam: true,
+                    focusNodeAdjacency: true,
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}',
+                        fontSize: 14
+                    },
+                    lineStyle: {
+                        color: 'source',
+                        curveness: 0.3
+                    },
+                    emphasis: {
+                        lineStyle: {
+                            width: 5
+                        }
+                    }
+                }]
+            };
+            chart.setOption(option);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 初始化地图
+        function initMapChart() {
+            const chart = echarts.init(document.getElementById('map-chart'));
+            const option = {
+                title: {
+                    text: '唐代诗人地域情感分布',
+                    subtext: '基于《全唐诗》数据分析',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>情感分值: {c}'
+                },
+                visualMap: {
+                    min: 0.3,
+                    max: 0.7,
+                    text: ['忧郁', '豪迈'],
+                    realtime: false,
+                    calculable: true,
+                    inRange: {
+                        color: ['#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#fee090', '#fdae61', '#f46d43', '#d73027']
+                    }
+                },
+                series: [{
+                    name: '情感分值',
+                    type: 'map',
+                    map: 'china',
+                    roam: true,
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: [
+                        {name: '北京', value: 0.52},
+                        {name: '天津', value: 0.48},
+                        {name: '河北', value: 0.51},
+                        {name: '山西', value: 0.49},
+                        {name: '内蒙古', value: 0.45},
+                        {name: '辽宁', value: 0.47},
+                        {name: '吉林', value: 0.46},
+                        {name: '黑龙江', value: 0.44},
+                        {name: '上海', value: 0.55},
+                        {name: '江苏', value: 0.58},
+                        {name: '浙江', value: 0.57},
+                        {name: '安徽', value: 0.53},
+                        {name: '福建', value: 0.54},
+                        {name: '江西', value: 0.52},
+                        {name: '山东', value: 0.50},
+                        {name: '河南', value: 0.49},
+                        {name: '湖北', value: 0.51},
+                        {name: '湖南', value: 0.53},
+                        {name: '广东', value: 0.56},
+                        {name: '广西', value: 0.55},
+                        {name: '海南', value: 0.57},
+                        {name: '重庆', value: 0.50},
+                        {name: '四川', value: 0.52},
+                        {name: '贵州', value: 0.51},
+                        {name: '云南', value: 0.53},
+                        {name: '西藏', value: 0.48},
+                        {name: '陕西', value: 0.47},
+                        {name: '甘肃', value: 0.42},
+                        {name: '青海', value: 0.41},
+                        {name: '宁夏', value: 0.43},
+                        {name: '新疆', value: 0.40},
+                        {name: '台湾', value: 0.56},
+                        {name: '香港', value: 0.57},
+                        {name: '澳门', value: 0.56}
+                    ]
+                }]
+            };
+            chart.setOption(option);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 初始化时间线图表
+        function initTimelineChart() {
+            const chart = echarts.init(document.getElementById('timeline-chart'));
+            
+            // 意象数据
+            const timelineData = {
+                moon: {
+                    name: '明月',
+                    data: [20, 25, 35, 85, 70, 60, 55, 50],
+                    description: '图表展示了<span class="highlight">"明月"</span>意象在不同朝代的使用频率变化。我们可以看到，"明月"意象在唐代达到顶峰，这与唐代诗歌的繁荣以及<span class="highlight">"望月怀远"</span>的文化传统密切相关。',
+                    poem: {
+                        title: '水调歌头·明月几时有',
+                        author: '【宋】苏轼',
+                        content: '明月几时有？把酒问青天。\n不知天上宫阙，今夕是何年。\n我欲乘风归去，又恐琼楼玉宇，高处不胜寒。\n起舞弄清影，何似在人间。'
+                    }
+                },
+                willow: {
+                    name: '杨柳',
+                    data: [15, 20, 30, 65, 75, 60, 55, 50],
+                    description: '图表展示了<span class="highlight">"杨柳"</span>意象在不同朝代的使用频率变化。"杨柳"意象在宋代达到高峰，这与宋代婉约词风的盛行以及<span class="highlight">"折柳赠别"</span>的文化习俗密切相关。',
+                    poem: {
+                        title: '咏柳',
+                        author: '【唐】贺知章',
+                        content: '碧玉妆成一树高，万条垂下绿丝绦。\n不知细叶谁裁出，二月春风似剪刀。'
+                    }
+                },
+                goose: {
+                    name: '鸿雁',
+                    data: [10, 15, 25, 50, 45, 40, 35, 30],
+                    description: '图表展示了<span class="highlight">"鸿雁"</span>意象在不同朝代的使用频率变化。鸿雁作为候鸟，常被用来象征<span class="highlight">思乡怀远</span>之情，在唐代诗歌中尤为常见。',
+                    poem: {
+                        title: '闺怨',
+                        author: '【唐】王昌龄',
+                        content: '闺中少妇不知愁，春日凝妆上翠楼。\n忽见陌头杨柳色，悔教夫婿觅封侯。'
+                    }
+                },
+                horse: {
+                    name: '骏马',
+                    data: [25, 30, 35, 60, 40, 35, 30, 25],
+                    description: '图表展示了<span class="highlight">"骏马"</span>意象在不同朝代的使用频率变化。"骏马"意象在唐代达到顶峰，这与唐代<span class="highlight">尚武精神</span>和边塞诗的繁荣密切相关。',
+                    poem: {
+                        title: '马诗',
+                        author: '【唐】李贺',
+                        content: '大漠沙如雪，燕山月似钩。\n何当金络脑，快走踏清秋。'
+                    }
+                },
+                wine: {
+                    name: '美酒',
+                    data: [15, 20, 40, 70, 65, 55, 50, 45],
+                    description: '图表展示了<span class="highlight">"美酒"</span>意象在不同朝代的使用频率变化。"美酒"意象在唐代达到高峰，这与唐代<span class="highlight">诗酒文化</span>的盛行以及文人雅士的饮酒赋诗传统密切相关。',
+                    poem: {
+                        title: '客中行',
+                        author: '【唐】李白',
+                        content: '兰陵美酒郁金香，玉碗盛来琥珀光。\n但使主人能醉客，不知何处是他乡。'
+                    }
+                }
+            };
+            
+            // 初始选项
+            const initialOption = {
+                title: {
+                    text: '自然意象使用频率历史变迁',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['明月'],
+                    top: 30
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['先秦', '汉代', '魏晋', '唐代', '宋代', '元代', '明代', '清代']
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '使用频率'
+                },
+                series: [
+                    {
+                        name: '明月',
+                        type: 'line',
+                        data: timelineData.moon.data,
+                        smooth: true,
+                        lineStyle: {
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#8c2318'
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(initialOption);
+            
+            // 存储图表实例和数据
+            window.timelineChart = chart;
+            window.timelineData = timelineData;
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 初始化诗人分析图表
+        function initPoetCharts() {
+            // 初始化雷达图
+            const radarChart = echarts.init(document.getElementById('radar-chart'));
+            
+            // 初始化词云图
+            const wordcloudChart = echarts.init(document.getElementById('wordcloud-chart'));
+            
+            // 默认显示李白的数据
+            updatePoetCharts('libai');
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                radarChart.resize();
+                wordcloudChart.resize();
+            });
+        }
+
+        // 更新诗人图表
+        function updatePoetCharts(poetId) {
+            const poetData = {
+                libai: {
+                    name: '李白',
+                    description: '李白作为盛唐浪漫主义诗人的代表，其诗歌中充满了豪放不羁的意象。他偏爱"明月"、"美酒"、"长剑"等意象，体现了其豪迈洒脱的性格特点。同时，"白发"、"秋霜"等意象也反映了他对时光流逝的感慨。',
+                    radarData: [95, 85, 75, 80, 70, 60],
+                    wordcloudData: [
+                        {name: '明月', value: 100},
+                        {name: '美酒', value: 90},
+                        {name: '长江', value: 80},
+                        {name: '青山', value: 75},
+                        {name: '白云', value: 70},
+                        {name: '长风', value: 65},
+                        {name: '长剑', value: 60},
+                        {name: '白发', value: 55},
+                        {name: '秋霜', value: 50},
+                        {name: '飞鸟', value: 45},
+                        {name: '落花', value: 40},
+                        {name: '孤帆', value: 35},
+                        {name: '玉壶', value: 30},
+                        {name: '金樽', value: 25},
+                        {name: '瑶台', value: 20}
+                    ]
+                },
+                dufu: {
+                    name: '杜甫',
+                    description: '杜甫作为唐代现实主义诗人的代表，其诗歌关注社会现实与民生疾苦。他常用"秋风"、"茅屋"、"战马"等意象，反映社会动荡与人民苦难。同时，"孤雁"、"寒江"等意象也体现了他深沉的忧国忧民之情。',
+                    radarData: [60, 40, 30, 85, 75, 65],
+                    wordcloudData: [
+                        {name: '秋风', value: 100},
+                        {name: '茅屋', value: 90},
+                        {name: '战马', value: 85},
+                        {name: '孤雁', value: 80},
+                        {name: '寒江', value: 75},
+                        {name: '白发', value: 70},
+                        {name: '泪痕', value: 65},
+                        {name: '烽火', value: 60},
+                        {name: '山河', value: 55},
+                        {name: '百姓', value: 50}
+                    ]
+                },
+                sushi: {
+                    name: '苏轼',
+                    description: '苏轼作为宋代文豪，其诗词兼具豪放与婉约之风。他常用"明月"、"江水"、"扁舟"等意象，表达豁达的人生态度。同时，"梅花"、"竹石"等意象也体现了他高洁的品格与不屈的精神。',
+                    radarData: [80, 70, 40, 85, 75, 65],
+                    wordcloudData: [
+                        {name: '明月', value: 100},
+                        {name: '江水', value: 90},
+                        {name: '扁舟', value: 85},
+                        {name: '梅花', value: 80},
+                        {name: '竹石', value: 75},
+                        {name: '风雨', value: 70},
+                        {name: '青山', value: 65},
+                        {name: '白发', value: 60},
+                        {name: '酒', value: 55},
+                        {name: '梦', value: 50}
+                    ]
+                },
+                liquingzhao: {
+                    name: '李清照',
+                    description: '李清照作为宋代婉约词人的代表，其词作情感细腻，意象精巧。她常用"黄花"、"梧桐"、"细雨"等意象，表达闺中愁绪与家国之思。同时，"雁字"、"西楼"等意象也体现了她对远方亲人的思念之情。',
+                    radarData: [70, 40, 20, 50, 65, 85],
+                    wordcloudData: [
+                        {name: '黄花', value: 100},
+                        {name: '梧桐', value: 90},
+                        {name: '细雨', value: 85},
+                        {name: '雁字', value: 80},
+                        {name: '西楼', value: 75},
+                        {name: '残酒', value: 70},
+                        {name: '泪', value: 65},
+                        {name: '瘦', value: 60},
+                        {name: '愁', value: 55},
+                        {name: '梦', value: 50}
+                    ]
+                },
+                wangwei: {
+                    name: '王维',
+                    description: '王维作为唐代山水田园诗派的代表，其诗歌意境空灵，充满禅意。他常用"空山"、"明月"、"清泉"等意象，营造宁静淡远的意境。同时，"白云"、"青苔"等意象也体现了他对自然之美的独特感悟。',
+                    radarData: [75, 30, 20, 90, 70, 80],
+                    wordcloudData: [
+                        {name: '空山', value: 100},
+                        {name: '明月', value: 90},
+                        {name: '清泉', value: 85},
+                        {name: '白云', value: 80},
+                        {name: '青苔', value: 75},
+                        {name: '竹林', value: 70},
+                        {name: '落花', value: 65},
+                        {name: '鸟鸣', value: 60},
+                        {name: '禅意', value: 55},
+                        {name: '幽静', value: 50}
+                    ]
+                }
+            };
+            
+            const data = poetData[poetId];
+            document.getElementById('poet-name').textContent = data.name + '的意象世界';
+            document.getElementById('poet-description').textContent = data.description;
+            
+            // 更新雷达图
+            const radarChart = echarts.getInstanceByDom(document.getElementById('radar-chart'));
+            const radarOption = {
+                title: {
+                    text: data.name + '意象偏好雷达图',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {},
+                radar: {
+                    indicator: [
+                        { name: '明月', max: 100 },
+                        { name: '美酒', max: 100 },
+                        { name: '长剑', max: 100 },
+                        { name: '山水', max: 100 },
+                        { name: '风云', max: 100 },
+                        { name: '花鸟', max: 100 }
+                    ]
+                },
+                series: [{
+                    type: 'radar',
+                    data: [
+                        {
+                            value: data.radarData,
+                            name: data.name,
+                            areaStyle: {}
+                        }
+                    ]
+                }]
+            };
+            radarChart.setOption(radarOption);
+            
+            // 更新词云图
+            const wordcloudChart = echarts.getInstanceByDom(document.getElementById('wordcloud-chart'));
+            const wordcloudOption = {
+                title: {
+                    text: data.name + '常用意象词云',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {},
+                series: [{
+                    type: 'wordCloud',
+                    shape: 'circle',
+                    left: 'center',
+                    top: 'center',
+                    width: '90%',
+                    height: '90%',
+                    right: null,
+                    bottom: null,
+                    sizeRange: [12, 60],
+                    rotationRange: [-90, 90],
+                    rotationStep: 45,
+                    gridSize: 8,
+                    drawOutOfBound: false,
+                    textStyle: {
+                        fontFamily: 'sans-serif',
+                        fontWeight: 'bold',
+                        color: function () {
+                            return 'rgb(' + [
+                                Math.round(Math.random() * 160 + 95),
+                                Math.round(Math.random() * 160 + 95),
+                                Math.round(Math.random() * 160 + 95)
+                            ].join(',') + ')';
+                        }
+                    },
+                    emphasis: {
+                        focus: 'self',
+                        textStyle: {
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    data: data.wordcloudData
+                }]
+            };
+            wordcloudChart.setOption(wordcloudOption);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 时间线按钮交互 - 修复后的代码
+            document.querySelectorAll('.timeline-section .controls button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    document.querySelectorAll('.timeline-section .controls button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // 给当前点击的按钮添加active类
+                    this.classList.add('active');
+                    
+                    // 根据按钮的data-type属性更新图表
+                    const type = this.getAttribute('data-type');
+                    updateTimelineChart(type);
+                });
+            });
+
+            // 诗人选择交互
+            document.getElementById('poet-select').addEventListener('change', function() {
+                updatePoetCharts(this.value);
+            });
+        }
+
+        // 更新时间线图表
+        function updateTimelineChart(type) {
+            const chart = window.timelineChart;
+            const data = window.timelineData[type];
+            
+            if (!chart || !data) return;
+            
+            const option = {
+                series: [{
+                    name: data.name,
+                    data: data.data,
+                    type: 'line',
+                    smooth: true,
+                    lineStyle: {
+                        width: 3
+                    },
+                    itemStyle: {
+                        color: '#8c2318'
+                    }
+                }],
+                legend: {
+                    data: [data.name]
+                }
+            };
+            
+            chart.setOption(option);
+            
+            // 更新描述文本
+            document.getElementById('timeline-description').innerHTML = data.description;
+            
+            // 更新诗词展示
+            const poemContainer = document.getElementById('timeline-poem');
+            poemContainer.querySelector('.poem-title').textContent = data.poem.title;
+            poemContainer.querySelector('.poem-author').textContent = data.poem.author;
+            poemContainer.querySelector('.poem-content').textContent = data.poem.content;
+        }
+    </script>
 </body>
 </html>
